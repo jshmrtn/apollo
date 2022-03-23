@@ -42,10 +42,14 @@ export function useApolloClient<TCacheShape = any> (clientId?: ClientId): UseApo
     const providedApolloClient: ApolloClient<TCacheShape> | null = inject(DefaultApolloClient, null)
 
     resolveImpl = (id?: ClientId) => {
-      if (savedCurrentClient) {
-        return savedCurrentClient
-      } else if (id) {
+      /*
+      FIX: Swap statements to prevent resolveClientWithId from
+      being blocked by savedCurrentClient when an id is set.
+      */
+      if (id) {
         return resolveClientWithId(providedApolloClients, id)
+      } else if (savedCurrentClient) {
+        return savedCurrentClient
       }
       return resolveDefaultClient(providedApolloClients, providedApolloClient)
     }
